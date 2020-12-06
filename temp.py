@@ -1,9 +1,9 @@
 from collection.exporter import Exporter
 from pprint import pprint
 #
-# with open("resources/raw-documents/INFY.pkl", "rb") as fl:
+# with open("res/raw-documents/INFY.pkl", "rb") as fl:
 #     doc = pickle.load(fl)
-from presenter.stocks import Stock, SectorStocks, Stocks
+from models.stocks import Stock, SectorStocks, Stocks
 
 exporter = Exporter()
 # pprint(exporter.get_stock_financial_data("AARTIIND"))

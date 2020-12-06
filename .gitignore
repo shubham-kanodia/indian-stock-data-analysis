@@ -1,4 +1,4 @@
-resources/prices
+res/
 *.pyc
 *.pyo
 .DS_Store

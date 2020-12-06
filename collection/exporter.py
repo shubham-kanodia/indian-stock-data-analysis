@@ -8,7 +8,7 @@ import datetime
 class Exporter:
     def __init__(self):
         try:
-            self.conn = sqlite3.connect("resources/stock-data.db")
+            self.conn = sqlite3.connect("res/stock-data.db")
             self.cursor = self.conn.cursor()
             self.date = datetime.date.today().strftime('%d%m%Y')
 
@@ -69,13 +69,13 @@ class Exporter:
 
     @staticmethod
     def add_data(symbol, data):
-        data_dict = SqliteDict(f"resources/prices/{symbol}.sqlite", autocommit=True)
+        data_dict = SqliteDict(f"res/prices/{symbol}.sqlite", autocommit=True)
         for key in data:
             data_dict[key] = data[key]
 
     @staticmethod
     def get_stock_data(symbol):
-        data_dict = SqliteDict(f"resources/prices/{symbol}.sqlite", autocommit=True)
+        data_dict = SqliteDict(f"res/prices/{symbol}.sqlite", autocommit=True)
         return dict(data_dict)
 
     @staticmethod
@@ -90,7 +90,7 @@ class Exporter:
 
     @staticmethod
     def add_stock_financial_data(data, symbol):
-        data_dict = SqliteDict(f"resources/financial-data/{symbol}.sqlite", autocommit=True)
+        data_dict = SqliteDict(f"res/financial-data/{symbol}.sqlite", autocommit=True)
         for key in data:
             if key not in data_dict:
                 data_dict[key] = data[key]
@@ -102,13 +102,13 @@ class Exporter:
 
     @staticmethod
     def get_financial_doc(symbol):
-        with open(f"resources/raw-documents/{symbol}.pkl", "rb") as fl:
+        with open(f"res/raw-documents/{symbol}.pkl", "rb") as fl:
             page = pickle.load(fl)
         return page
 
     @staticmethod
     def get_stock_financial_data(symbol):
-        return dict(SqliteDict(f"resources/financial-data/{symbol}.sqlite"))
+        return dict(SqliteDict(f"res/financial-data/{symbol}.sqlite"))
 
     def get_stocks_from_sector(self, sector):
         sql_fetch = f"""

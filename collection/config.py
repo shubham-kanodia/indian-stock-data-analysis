@@ -7,6 +7,12 @@ class CONFIG:
                                "getHistoricalData.jsp?" \
                                "symbol=STOCK_SYMBOL&series=EQ&fromDate=undefined&toDate=undefined&datePeriod=week"
 
+    HISTORICAL_DATA_DATE_TO_DATE_URL = "https://www1.nseindia.com/live_market/dynaContent/live_watch/get_quote/" \
+                                       "getHistoricalData.jsp?" \
+                                       "symbol=STOCK_SYMBOL&series=EQ&fromDate=FROM_DATE&toDate=TO_DATE"
+
+    SCREENER_URL = "https://www.screener.in/company/STOCK_SYMBOL/consolidated/#balance-sheet"
+
     HEADERS = {'Accept': '*/*',
                'Accept-Language': 'en-US,en;q=0.5',
                'Host': 'www1.nseindia.com',

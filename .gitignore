@@ -1,1 +1,5 @@
 resources/prices
+*.pyc
+*.pyo
+.DS_Store
+.idea/

@@ -1,5 +1,5 @@
 from collection.data_collection import DataCollection
-from collection.exporter import Exporter
+from collection.dao import DAO
 from evaluators.operations import Operations
 
 
@@ -11,7 +11,7 @@ class Utilities:
      """
     def __init__(self):
         self.data_collection = DataCollection()
-        self.exporter = Exporter()
+        self.exporter = DAO()
 
     def update_stock_sector_data(self):
         self.data_collection.collect_sector_data()

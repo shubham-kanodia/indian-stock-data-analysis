@@ -1,4 +1,4 @@
-from collection.data_collection import Exporter
+from collection.data_collection import DAO
 from nsetools import Nse
 from datetime import datetime
 from time import sleep
@@ -7,7 +7,7 @@ from time import sleep
 class Runner:
 
     def __init__(self):
-        self.exporter = Exporter()
+        self.exporter = DAO()
         self.nse = Nse()
 
     def populate_today_price(self):

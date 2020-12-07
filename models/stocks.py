@@ -1,6 +1,6 @@
 import pprint
 
-from collection.exporter import Exporter
+from collection.dao import DAO
 from datetime import datetime
 import datetime as dt
 import logging
@@ -60,7 +60,7 @@ class Stock:
 class Stocks:
 
     def __init__(self):
-        self.exporter = Exporter()
+        self.exporter = DAO()
         self.stock_symbols = self.exporter.get_symbols()
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
@@ -113,7 +113,7 @@ class SectorStocks:
 
     def __init__(self, sector):
         self.sector = sector
-        self.exporter = Exporter()
+        self.exporter = DAO()
         self.stock_symbols = self.exporter.get_stocks_from_sector(sector)
         self.stocks = [Stock(stock_symbol, self.exporter) for stock_symbol in self.stock_symbols]
         logging.basicConfig(format='%(asctime)s %(message)s',

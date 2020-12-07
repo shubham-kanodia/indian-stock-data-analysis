@@ -1,11 +1,11 @@
-from collection.exporter import Exporter
+from collection.dao import DAO
 from pprint import pprint
 #
 # with open("res/raw-documents/INFY.pkl", "rb") as fl:
 #     doc = pickle.load(fl)
 from models.stocks import Stock, SectorStocks, Stocks
 
-exporter = Exporter()
+exporter = DAO()
 # pprint(exporter.get_stock_financial_data("AARTIIND"))
 
 # utilities = Utilities()

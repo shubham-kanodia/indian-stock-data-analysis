@@ -108,6 +108,9 @@ class DataCollection:
 
     def collect_five_years_data_all(self):
         for symbol in self.all_symbols:
-            print(f"[Added] {symbol}")
-            self.fetcher.export_five_years_data(symbol, self.dao)
+            try:
+                print(f"[Added] {symbol}")
+                self.fetcher.export_five_years_data(symbol, self.dao)
+            except Exception:
+                print(f"[Skipped] {symbol}")
         sleep(1)

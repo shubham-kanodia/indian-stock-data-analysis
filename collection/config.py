@@ -21,3 +21,6 @@ class CONFIG:
                }
 
     OPENER = build_opener(HTTPCookieProcessor(CookieJar()))
+
+    MONGO_URI = "mongodb+srv://stocker:shaan123@cluster0.6f58b.mongodb.net/stocker?retryWrites=true&w=majority"
+

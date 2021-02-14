@@ -3,14 +3,14 @@ import datetime as dt
 
 
 class Stock:
-    def __init__(self, stock_symbol, exporter):
+    def __init__(self, stock_symbol, dao):
         self.symbol = stock_symbol
-        self.exporter = exporter
-        self.data = self.exporter.get_stock_data(stock_symbol)
+        self.dao = dao
+        self.data = self.dao.get_stock_data(stock_symbol)
 
     def convert_date(self, date):
-        date = datetime.strptime(date, "%d-%m-%Y").date()
-        return date.strftime("%d-%b-%Y")
+        date = datetime.strptime(date, "%d-%b-%Y").date()
+        return date.strftime("%Y-%m-%d")
 
     def get_closing_price(self, date):
         """Note: date format should be dd-mm-yyyy"""
@@ -28,17 +28,13 @@ class Stock:
         date = self.prev_day(date)
         return self.get_closing_price(date)
 
-    def get_last_n_days_data(self, n):
-        day = dt.date.today()\
-            .strftime("%d-%m-%Y")
-        data = [self.get_closing_price(day)]
-        num_of_days = 1
-        while num_of_days < n:
-            if int(day.split("-")[2]) < 2016:
-                break
-            price = self.get_prev_day_price(day)
-            if price:
-                data.append(price)
-                num_of_days += 1
-            day = self.prev_day(day)
-        return list(reversed(data))
+    def _sortable_date_format(self, date):
+        date = datetime.strptime(date, "%d-%b-%Y").date()
+        return date.strftime("%Y%m%d")
+
+    def get_price_history(self):
+        sorted_data = sorted(self.data,
+                             key=lambda x: self._sortable_date_format(x) if not x == "_id" else "")
+        dates = [self.convert_date(key) for key in sorted_data if key != "_id"]
+        prices = [self.data[key]["close_price"] for key in sorted_data if key != "_id"]
+        return dates, prices

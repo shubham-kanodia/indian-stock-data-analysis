@@ -9,7 +9,7 @@ class CovidEffect:
     def get_price_change_from_effect(self, symbol):
         try:
             dates, prices = self.dao.get_stock_price_history(symbol)
-            period = dates.index(self.baseline_date) if self.baseline_date in dates else 260
+            period = len(dates) - dates.index(self.baseline_date) if self.baseline_date in dates else 260
             prices = np.array(prices[-1 * period:])
 
             prices = np.array(prices[-1 * period:])

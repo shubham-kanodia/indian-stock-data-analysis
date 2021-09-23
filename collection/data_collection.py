@@ -125,6 +125,38 @@ class Parser:
         return lst
 
     @staticmethod
+    def parse_quarterly_income_statement(document):
+        """
+        Row 1 -> Time published (Annual)
+        Row 2 -> sales
+        Row 3 -> expenses
+        Row 4 -> operating_profit
+        Row 5 -> opm_percentage
+        Row 6 -> other_income
+        Row 7 -> interest
+        Row 8 -> depreciation
+        Row 9 -> profit_before_tax
+        Row 10 -> tax_percentage
+        Row 11 -> net_profit
+        Row 12 -> eps_in_rs
+        Row 13 -> dividend_payout
+        """
+
+        soup = BeautifulSoup(document.content, 'html.parser')
+        income_statement_table = soup.find(id="quarters").find('table')
+
+        lst = [
+            [cell.string for cell in income_statement_table.find_all("tr")[0].find_all("th")[1:]]
+        ]
+
+        for row in income_statement_table.find_all("tr")[1:]:
+            cells = row.find_all("td")
+            lst.append(
+                [None if not cell.string else cell.string.replace(",", "") for cell in cells[1:]]
+            )
+        return lst
+
+    @staticmethod
     def parse_sector(document):
         soup = BeautifulSoup(document.content, 'html.parser')
         sector = soup \
@@ -285,6 +317,40 @@ class Fetcher:
             )
 
     @staticmethod
+    def export_quarterly_income_statement_data(stock_symbol, dao):
+        parameters = [
+            "time_published",
+            "sales",
+            "expenses",
+            "operating_profit",
+            "opm_percentage",
+            "other_income",
+            "interest",
+            "depreciation",
+            "profit_before_tax",
+            "tax_percentage",
+            "net_profit",
+            "eps_in_rs"
+        ]
+        try:
+            document = dao.get_financial_doc(stock_symbol)
+            financial_data = {}
+            data = Parser.parse_quarterly_income_statement(document)[:-1]
+            for time in data[0]:
+                financial_data[time] = {}
+
+            for row in range(1, len(data)):
+                for col in range(len(data[0])):
+                    financial_data[data[0][col]][parameters[row]] = data[row][col]
+
+            dao.add_quarterly_income_statement_data(stock_symbol, financial_data)
+
+        except Exception as exp:
+            print(
+                f"[Skipped] Could not parse income statement data {stock_symbol}"
+            )
+
+    @staticmethod
     def export_stock_sector(stock_symbol, dao):
         try:
             document = dao.get_financial_doc(stock_symbol)
@@ -366,6 +432,16 @@ class DataCollection:
                 self.fetcher.export_stock_financial_docs(symbol)
                 self.fetcher.export_balance_sheet_data(symbol, self.dao)
                 self.fetcher.export_income_statement_data(symbol, self.dao)
+                print(f"[Added] {symbol}")
+            except Exception:
+                print(f"[SKIPPED] {symbol}")
+        sleep(1)
+
+    def collect_quarterly_income_statement(self):
+        for symbol in self.all_symbols:
+            try:
+                self.fetcher.export_stock_financial_docs(symbol)
+                self.fetcher.export_quarterly_income_statement_data(symbol, self.dao)
                 print(f"[Added] {symbol}")
             except Exception:
                 print(f"[SKIPPED] {symbol}")

@@ -15,6 +15,7 @@ class DAO:
         self.collection_screener_prices = _db["screener_prices"]
         self.collection_golden_crossover = _db["golden_crossover"]
         self.collection_covid_effect = _db["covid_effect"]
+        self.collection_quarterly_income_statement = _db["quarterly_income_statement"]
 
         self.screener_id_dict = pickle.load(open("res/screener_id.pkl", "rb"))
 
@@ -102,3 +103,11 @@ class DAO:
             return False
         except Exception:
             return False
+
+    def add_quarterly_income_statement_data(self, symbol, data):
+        data["_id"] = symbol
+        prior_data = self.collection_quarterly_income_statement.find_one({"_id": symbol})
+        if prior_data:
+            self.collection_quarterly_income_statement.update_one({"_id": symbol}, {"$set": data})
+        else:
+            self.collection_quarterly_income_statement.insert_one(data)

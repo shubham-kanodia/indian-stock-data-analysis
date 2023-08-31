@@ -21,3 +21,8 @@ class CONFIG:
                }
 
     OPENER = build_opener(HTTPCookieProcessor(CookieJar()))
+
+    MONGO_URI = "mongodb+srv://stocker:shaan123@cluster0.6f58b.mongodb.net/stocker?retryWrites=true&w=majority"
+
+    SCREENER_PRICE_URL = "https://www.screener.in/api/company/COMPANY_SCREENER_ID/chart/" \
+                         "?q=Price-SMA50-SMA200-Volume&days=10000&consolidated=true"

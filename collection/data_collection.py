@@ -82,13 +82,13 @@ class Parser:
         balance_sheet_table = soup.find(id="balance-sheet").find('table')
 
         lst = [
-            [cell.string for cell in balance_sheet_table.find_all("tr")[0].find_all("th")[1:]]
+            [Fetcher.clean_string(cell.string) for cell in balance_sheet_table.find_all("tr")[0].find_all("th")[1:]]
         ]
 
         for row in balance_sheet_table.find_all("tr")[1:]:
             cells = row.find_all("td")
             lst.append(
-                [cell.string.replace(",", "") for cell in cells[1:]]
+                [Fetcher.clean_string(cell.string).replace(",", "") for cell in cells[1:]]
             )
         return lst
 
@@ -114,13 +114,13 @@ class Parser:
         income_statement_table = soup.find(id="profit-loss").find('table')
 
         lst = [
-            [cell.string for cell in income_statement_table.find_all("tr")[0].find_all("th")[1:-1]]
+            [Fetcher.clean_string(cell.string) for cell in income_statement_table.find_all("tr")[0].find_all("th")[1:-1]]
         ]
 
         for row in income_statement_table.find_all("tr")[1:]:
             cells = row.find_all("td")
             lst.append(
-                [None if not cell.string else cell.string.replace(",", "") for cell in cells[1:-1]]
+                [None if not cell.string else Fetcher.clean_string(cell.string).replace(",", "") for cell in cells[1:-1]]
             )
         return lst
 
@@ -146,13 +146,13 @@ class Parser:
         income_statement_table = soup.find(id="quarters").find('table')
 
         lst = [
-            [cell.string for cell in income_statement_table.find_all("tr")[0].find_all("th")[1:]]
+            [Fetcher.clean_string(cell.string) for cell in income_statement_table.find_all("tr")[0].find_all("th")[1:]]
         ]
 
         for row in income_statement_table.find_all("tr")[1:]:
             cells = row.find_all("td")
             lst.append(
-                [None if not cell.string else cell.string.replace(",", "") for cell in cells[1:]]
+                [None if not cell.string else Fetcher.clean_string(cell.string).replace(",", "") for cell in cells[1:]]
             )
         return lst
 
@@ -234,6 +234,10 @@ class Fetcher:
             )
 
     @staticmethod
+    def clean_string(text):
+        return text.strip(" ").strip("\n").strip(" ")
+
+    @staticmethod
     def export_balance_sheet_data(stock_symbol, dao):
         parameters = [
             "time_published",
@@ -253,11 +257,11 @@ class Fetcher:
             financial_data = {}
             data = Parser.parse_balance_sheet_data(document)
             for time in data[0]:
-                financial_data[time] = {}
+                financial_data[Fetcher.clean_string(time)] = {}
 
             for row in range(1, len(data)):
                 for col in range(len(data[0])):
-                    financial_data[data[0][col]][parameters[row]] = data[row][col]
+                    financial_data[Fetcher.clean_string(data[0][col])][parameters[row]] = Fetcher.clean_string(data[row][col])
 
             dao.add_stock_financial_data(stock_symbol, financial_data)
 
@@ -400,7 +404,7 @@ class DataCollection:
         sleep(1)
 
     def collect_five_years_data_all(self):
-        check = False
+        check = True
         for symbol in self.all_symbols:
             if symbol == "HEG":
                 check = True
@@ -435,7 +439,7 @@ class DataCollection:
                 print(f"[Added] {symbol}")
             except Exception:
                 print(f"[SKIPPED] {symbol}")
-        sleep(1)
+            sleep(1)
 
     def collect_quarterly_income_statement(self):
         for symbol in self.all_symbols:
@@ -460,5 +464,7 @@ class DataCollection:
             try:
                 self.fetcher.export_screener_10k_prices(symbol, self.dao)
                 print(f"[Added] {symbol}")
+
+                sleep(1)
             except Exception as exp:
                 print(f"[SKIPPED] {symbol}")

@@ -1,4 +1,5 @@
 import pickle
+import json
 import numpy as np
 from datetime import datetime
 from pymongo import MongoClient
@@ -17,11 +18,18 @@ class DAO:
         self.collection_covid_effect = _db["covid_effect"]
         self.collection_quarterly_income_statement = _db["quarterly_income_statement"]
 
-        self.screener_id_dict = pickle.load(open("res/screener_id.pkl", "rb"))
+        self.screener_id_dict = json.load(open("res/screener_ids.json", "rb"))
 
     def get_symbols(self):
         results = self.collection_stock_names.find()
         return [result["_id"] for result in results]
+
+    def add_symbol(self, symbol, data):
+        if self.collection_stock_names.find_one({"_id": symbol}):
+            self.collection_stock_names.update_one({"_id": symbol}, {"$set": data})
+        else:
+            data["_id"] = symbol
+            self.collection_stock_names.insert_one(data)
 
     def add_data(self, symbol, data):
         if self.collection_stock_prices.find_one({"_id": symbol}):
@@ -61,10 +69,11 @@ class DAO:
             merged_data = self._merge_financial_data(prior_data, financial_data)
             self.collection_stock_financials.update_one({"_id": symbol}, {"$set": merged_data})
         else:
-            self.collection_stock_financials.insert({"_id": symbol, **financial_data})
+            self.collection_stock_financials.insert_one({"_id": symbol, **financial_data})
 
     def get_screener_id(self, stock_symbol):
-        return self.screener_id_dict.get(stock_symbol, None)
+        screener_id = self.screener_id_dict.get(stock_symbol, None)
+        return str(screener_id) if screener_id else None
 
     def update_golden_crossover_collection(self, data):
         self.collection_golden_crossover.remove({})

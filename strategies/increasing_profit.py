@@ -3,12 +3,11 @@ from pprint import pprint
 from tqdm import tqdm
 
 
-class RevenueStrategy:
+class ProfitStrategy:
     def __init__(self):
         self.dao = DAO()
         self.symbols = self.dao.get_symbols()
         self.num_of_years_into_consideration = 5
-        # sales = float(kpit_data["Mar 2023"]["sales"])
 
     def sort_data(self, data):
         months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -27,10 +26,10 @@ class RevenueStrategy:
         sorted_financial_data = [data[x] for x in sorted_keys]
         return sorted_financial_data
 
-    def get_sales_for_symbol(self, symbol):
+    def get_profit_for_symbol(self, symbol):
         data = self.dao.get_stock_financial_data(symbol)
         sorted_data = self.sort_data(data)
-        return [elem["sales"] for elem in sorted_data]
+        return [elem["net_profit"] for elem in sorted_data]
 
     def calculate_growth_rate_metric(self, numbers):
         numbers = [float(number) for number in numbers]
@@ -45,7 +44,7 @@ class RevenueStrategy:
                 growth_metric += growth_rate
             else:
                 # Subtract twice, stock gets double the reduction for negative growth
-                growth_metric += 2 * growth_rate
+                growth_metric += -2 * 100000000
 
         return growth_metric / self.num_of_years_into_consideration
 
@@ -54,7 +53,7 @@ class RevenueStrategy:
 
         for symbol in tqdm(self.symbols):
             try:
-                sales = self.get_sales_for_symbol(symbol)
+                sales = self.get_profit_for_symbol(symbol)
                 growth_metric = self.calculate_growth_rate_metric(sales)
 
                 symbol_growth_metric[symbol] = growth_metric
@@ -69,9 +68,7 @@ class RevenueStrategy:
         return symbols_ranked
 
 
-revenue_strategy = RevenueStrategy()
-numbers = revenue_strategy.get_sales_for_symbol("PVRINOX")
-print(revenue_strategy.calculate_growth_rate_metric(numbers))
-# ranked_stocks = revenue_strategy.rank_on_growth_metric()
-#
-# pprint(ranked_stocks)
+profit_strategy = ProfitStrategy()
+ranked_stocks = profit_strategy.rank_on_growth_metric()
+
+pprint(ranked_stocks)

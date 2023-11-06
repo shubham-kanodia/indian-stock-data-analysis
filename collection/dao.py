@@ -1,3 +1,4 @@
+import os
 import pickle
 import json
 import numpy as np
@@ -18,7 +19,11 @@ class DAO:
         self.collection_covid_effect = _db["covid_effect"]
         self.collection_quarterly_income_statement = _db["quarterly_income_statement"]
 
-        self.screener_id_dict = json.load(open("res/screener_ids.json", "rb"))
+        path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "../res/screener_ids.json"
+        )
+        self.screener_id_dict = json.load(open(path, "rb"))
 
     def get_symbols(self):
         results = self.collection_stock_names.find()
@@ -120,3 +125,6 @@ class DAO:
             self.collection_quarterly_income_statement.update_one({"_id": symbol}, {"$set": data})
         else:
             self.collection_quarterly_income_statement.insert_one(data)
+
+    def get_stock_financial_data(self, symbol):
+        return self.collection_stock_financials.find({"_id": symbol})[0]
